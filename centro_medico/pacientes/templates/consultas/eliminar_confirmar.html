@@ -1,15 +1,30 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h2>Eliminar Consulta</h2>
-    <p>¿Estás seguro de que deseas eliminar esta consulta?</p>
-    <p><strong>Paciente:</strong> {{ consulta.paciente.nombre }}</p>
-    <p><strong>Médico:</strong> {{ consulta.medico.nombre }}</p>
-    <p><strong>Fecha:</strong> {{ consulta.fecha }}</p>
-    
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Eliminar</button>
-    </form>
-    <a href="{% url 'consultas_lista' %}" class="btn btn-secondary mt-3">Cancelar</a>
+<div class="container mt-5">
+    <div class="card shadow rounded-4">
+        <div class="card-header bg-danger text-white">
+            <h2 class="mb-0">Eliminar Consulta</h2>
+        </div>
+        <div class="card-body">
+            <p class="fs-5 text-center">¿Estás seguro de que deseas eliminar esta consulta?</p>
+            <ul class="list-group mb-4">
+                <li class="list-group-item"><strong>Paciente:</strong> {{ consulta.paciente.nombre }}</li>
+                <li class="list-group-item"><strong>Médico:</strong> {{ consulta.medico.nombre }}</li>
+                <li class="list-group-item"><strong>Fecha:</strong> {{ consulta.fecha }}</li>
+            </ul>
+            <div class="d-flex justify-content-center">
+                <form method="POST" class="me-3">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash-alt"></i> Eliminar
+                    </button>
+                </form>
+                <a href="{% url 'consultas_lista' %}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

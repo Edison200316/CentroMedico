@@ -90,7 +90,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'centro_medico',
         'USER': 'root', 
-        'PASSWORD': 'edi200316',
+        'PASSWORD': 'Belen2025.Data',
         'HOST': 'localhost',
         'PORT': '3306',
     }

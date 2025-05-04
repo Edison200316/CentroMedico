@@ -1,18 +1,30 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2>Cancelar Cita</h2>
-    <p>¿Estás seguro que deseas cancelar esta cita?</p>
-    <p><strong>Paciente:</strong> {{ cita.paciente }}</p>
-    <p><strong>Médico:</strong> {{ cita.medico }}</p>
-    <p><strong>Fecha:</strong> {{ cita.fecha }}</p>
+<div class="container mt-5">
+    <div class="card shadow rounded-4 border-danger">
+        <div class="card-body text-center">
+            <h2 class="text-danger"><i class="fas fa-exclamation-triangle"></i> Cancelar Cita</h2>
+            <p class="fs-5">¿Estás seguro que deseas cancelar esta cita?</p>
 
-    <form method="post">
-        {% csrf_token %}
-        <a href="{% url 'citas_lista' %}" class="btn btn-secondary">Volver</a>
-        <button type="submit" class="btn btn-danger">Confirmar Cancelación</button>
-    </form>
+            <hr>
+            <div class="text-start mb-3">
+                <p><strong>Paciente:</strong> {{ cita.paciente }}</p>
+                <p><strong>Médico:</strong> {{ cita.medico }}</p>
+                <p><strong>Fecha:</strong> {{ cita.fecha }}</p>
+            </div>
+
+            <form method="post" class="d-flex justify-content-center gap-3">
+                {% csrf_token %}
+                <a href="{% url 'citas_lista' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash-alt"></i> Confirmar Cancelación
+                </button>
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock %}
 

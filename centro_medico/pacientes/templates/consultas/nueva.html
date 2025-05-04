@@ -1,33 +1,51 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
-    <h1 class="my-4">Nueva Consulta</h1>
-    <form method="POST">
-        {% csrf_token %}
-        <div class="form-group mb-3">
-            <label for="id_cita">Cita</label>
-            <select class="form-control" id="id_cita" name="cita">
-                {% for cita in citas %}
-                    <option value="{{ cita.id }}">{{ cita }}</option>
-                {% endfor %}
-            </select>
+<div class="container mt-5">
+    <div class="card shadow rounded-4">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Registrar Nueva Consulta</h2>
         </div>
-        <div class="form-group mb-3">
-            <label for="id_diagnostico">Diagnóstico</label>
-            <textarea class="form-control" id="id_diagnostico" name="diagnostico" rows="4"></textarea>
+        <div class="card-body">
+            <form method="POST" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <!-- Campo de selección de cita -->
+                <div class="form-group mb-3">
+                    <label for="id_cita" class="form-label"><strong>Cita</strong></label>
+                    <select class="form-control" id="id_cita" name="cita" required>
+                        <option value="" disabled selected>Seleccione una cita</option>
+                        {% for cita in citas %}
+                            <option value="{{ cita.id }}">{{ cita }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <!-- Campo de diagnóstico -->
+                <div class="form-group mb-3">
+                    <label for="id_diagnostico" class="form-label"><strong>Diagnóstico</strong></label>
+                    <textarea class="form-control" id="id_diagnostico" name="diagnostico" rows="4" required></textarea>
+                </div>
+                <!-- Campo de receta -->
+                <div class="form-group mb-3">
+                    <label for="id_receta" class="form-label"><strong>Receta</strong></label>
+                    <textarea class="form-control" id="id_receta" name="receta" rows="4"></textarea>
+                </div>
+                <!-- Campo de indicaciones -->
+                <div class="form-group mb-3">
+                    <label for="id_indicaciones" class="form-label"><strong>Indicaciones</strong></label>
+                    <textarea class="form-control" id="id_indicaciones" name="indicaciones" rows="4"></textarea>
+                </div>
+                <!-- Botones de acción -->
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'consultas_lista' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                </div>
+            </form>
         </div>
-        <div class="form-group mb-3">
-            <label for="id_receta">Receta</label>
-            <textarea class="form-control" id="id_receta" name="receta" rows="4"></textarea>
-        </div>
-        <div class="form-group mb-3">
-            <label for="id_indicaciones">Indicaciones</label>
-            <textarea class="form-control" id="id_indicaciones" name="indicaciones" rows="4"></textarea>
-        </div>
-        <button type="submit" class="btn btn-success">Guardar</button>
-        <a href="{% url 'consultas_lista' %}" class="btn btn-secondary">Cancelar</a>
-    </form>
+    </div>
 </div>
 {% endblock %}
 
