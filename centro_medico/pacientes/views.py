@@ -3,6 +3,9 @@ from django.contrib import messages
 from .models import Paciente, Medico, Cita, Consulta, Usuario
 from .forms import PacienteForm, MedicoForm, CitaForm, ConsultaForm, UsuarioForm
 
+def dashboard(request):
+    return render(request, 'dashboard.html')
+
 # Vistas para Pacientes
 def pacientes_lista(request):
     pacientes = Paciente.objects.all()
@@ -81,38 +84,68 @@ def medicos_eliminar(request, id):
     return render(request, 'medicos/eliminar.html', {'medico': medico})
 
 # Vistas para Citas Médicas
+# Listar Citas
 def citas_lista(request):
     citas = Cita.objects.all()
     return render(request, 'citas/lista.html', {'citas': citas})
 
+# Crear Nueva Cita
 def citas_nueva(request):
-    if request.method == 'POST':
-        form = CitaForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Cita agendada exitosamente.")
-            return redirect('citas_lista')
-    else:
-        form = CitaForm()
-    return render(request, 'citas/nueva.html', {'form': form})
+    pacientes = Paciente.objects.all()
+    medicos = Medico.objects.all()
 
-def citas_editar(request, id):
-    cita = get_object_or_404(Cita, id=id)
     if request.method == 'POST':
-        form = CitaForm(request.POST, instance=cita)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Cita actualizada exitosamente.")
-            return redirect('citas_lista')
-    else:
-        form = CitaForm(instance=cita)
-    return render(request, 'citas/editar.html', {'form': form, 'cita': cita})
+        paciente_id = request.POST['paciente']
+        medico_id = request.POST['medico']
+        fecha = request.POST['fecha']
+        hora = request.POST['hora']
+        estado = request.POST['estado']
+        motivo = request.POST['motivo']
 
-def citas_cancelar(request, id):
-    cita = get_object_or_404(Cita, id=id)
+        cita = Cita(
+            paciente_id=paciente_id,
+            medico_id=medico_id,
+            fecha=fecha,
+            hora=hora,
+            estado=estado,
+            motivo=motivo
+        )
+        cita.save()
+        messages.success(request, "Cita creada correctamente.")
+        return redirect('citas_lista')
+
+    return render(request, 'citas/nueva.html', {'pacientes': pacientes, 'medicos': medicos})
+
+# Editar Cita
+def citas_editar(request, cita_id):
+    cita = get_object_or_404(Cita, id=cita_id)
+    pacientes = Paciente.objects.all()
+    medicos = Medico.objects.all()
+
     if request.method == 'POST':
-        cita.delete()
-        messages.success(request, "Cita cancelada exitosamente.")
+        cita.paciente_id = request.POST['paciente']
+        cita.medico_id = request.POST['medico']
+        cita.fecha = request.POST['fecha']
+        cita.hora = request.POST['hora']
+        cita.estado = request.POST['estado']
+        cita.motivo = request.POST['motivo']
+        cita.save()
+        messages.success(request, "Cita actualizada correctamente.")
+        return redirect('citas_lista')
+
+    return render(request, 'citas/editar.html', {
+        'cita': cita,
+        'pacientes': pacientes,
+        'medicos': medicos
+    })
+
+# cancelar Cita
+def citas_cancelar(request, cita_id):
+    cita = get_object_or_404(Cita, id=cita_id)
+    if request.method == 'POST':
+        cita.estado = 'Cancelada'
+        cita.save()
+        messages.success(request, "La cita fue cancelada correctamente.")
         return redirect('citas_lista')
     return render(request, 'citas/cancelar.html', {'cita': cita})
 
@@ -131,6 +164,27 @@ def consultas_nueva(request):
     else:
         form = ConsultaForm()
     return render(request, 'consultas/nueva.html', {'form': form})
+
+def consultas_editar(request, id):
+    consulta = get_object_or_404(Consulta, id=id)
+    if request.method == 'POST':
+        form = ConsultaForm(request.POST, instance=consulta)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Consulta actualizada exitosamente.")
+            return redirect('consultas_lista')
+    else:
+        form = ConsultaForm(instance=consulta)
+    return render(request, 'consultas/editar.html', {'form': form, 'consulta': consulta})
+
+def consultas_eliminar(request, id):
+    consulta = get_object_or_404(Consulta, id=id)
+    if request.method == 'POST':
+        consulta.delete()
+        messages.success(request, "Consulta eliminada exitosamente.")
+        return redirect('consultas_lista')
+    return render(request, 'consultas/eliminar_confirmar.html', {'consulta': consulta})
+
 
 # Vistas para Usuarios
 def usuarios_lista(request):

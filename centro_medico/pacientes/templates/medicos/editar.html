@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Médico</title>
+</head>
+<body>
+    <h1>Editar Médico</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Actualizar</button>
+    </form>
+    <a href="{% url 'medicos_lista' %}">Volver a la lista de médicos</a>
+</body>
+</html>

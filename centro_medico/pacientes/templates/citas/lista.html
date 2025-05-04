@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Lista de Citas Médicas</h1>
+    <a href="{% url 'citas_nueva' %}" class="btn btn-primary mb-3">Nueva Cita</a>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Paciente</th>
+                <th>Médico</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Estado</th>
+                <th>Motivo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cita in citas %}
+                <tr>
+                    <td>{{ cita.paciente.nombre }}</td>
+                    <td>{{ cita.medico.nombre }}</td>
+                    <td>{{ cita.fecha|date:"Y-m-d" }}</td>
+                    <td>{{ cita.hora|date:"H:i" }}</td>
+                    <td>{{ cita.estado }}</td>
+                    <td>{{ cita.motivo }}</td>
+                    <td>
+                        <a href="{% url 'citas_editar' cita.id %}" class="btn btn-warning btn-sm">Editar</a>
+                        <a href="{% url 'citas_cancelar' cita.id %}" class="btn btn-sm btn-danger">Cancelar</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Buscar Paciente</title>
+</head>
+<body>
+    <h1>Buscar Paciente</h1>
+    <form method="GET">
+        <input type="text" name="q" placeholder="Buscar paciente por nombre" value="{{ request.GET.q }}">
+        <button type="submit">Buscar</button>
+    </form>
+    <h2>Resultados</h2>
+    {% if pacientes %}
+    <ul>
+        {% for paciente in pacientes %}
+        <li>{{ paciente.nombre }} - <a href="{% url 'pacientes_editar' paciente.id %}">Editar</a></li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No se encontraron resultados.</p>
+    {% endif %}
+</body>
+</html>

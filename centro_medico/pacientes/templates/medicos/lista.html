@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Lista de Médicos</h1>
+    <a href="{% url 'medicos_nuevo' %}" class="btn btn-primary mb-3">Nuevo Médico</a>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Especialidad</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for medico in medicos %}
+                <tr>
+                    <td>{{ medico.nombre }}</td>
+                    <td>{{ medico.apellido }}</td>
+                    <td>{{ medico.especialidad }}</td>
+                    <td>
+                        <a href="{% url 'medicos_editar' medico.id %}" class="btn btn-warning btn-sm">Editar</a>
+                        <a href="{% url 'medicos_eliminar' medico.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Nueva Consulta</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group mb-3">
+            <label for="id_cita">Cita</label>
+            <select class="form-control" id="id_cita" name="cita">
+                {% for cita in citas %}
+                    <option value="{{ cita.id }}">{{ cita }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group mb-3">
+            <label for="id_diagnostico">Diagnóstico</label>
+            <textarea class="form-control" id="id_diagnostico" name="diagnostico" rows="4"></textarea>
+        </div>
+        <div class="form-group mb-3">
+            <label for="id_receta">Receta</label>
+            <textarea class="form-control" id="id_receta" name="receta" rows="4"></textarea>
+        </div>
+        <div class="form-group mb-3">
+            <label for="id_indicaciones">Indicaciones</label>
+            <textarea class="form-control" id="id_indicaciones" name="indicaciones" rows="4"></textarea>
+        </div>
+        <button type="submit" class="btn btn-success">Guardar</button>
+        <a href="{% url 'consultas_lista' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}
+

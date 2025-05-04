@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Cancelar Cita</h2>
+    <p>¿Estás seguro que deseas cancelar esta cita?</p>
+    <p><strong>Paciente:</strong> {{ cita.paciente }}</p>
+    <p><strong>Médico:</strong> {{ cita.medico }}</p>
+    <p><strong>Fecha:</strong> {{ cita.fecha }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <a href="{% url 'citas_lista' %}" class="btn btn-secondary">Volver</a>
+        <button type="submit" class="btn btn-danger">Confirmar Cancelación</button>
+    </form>
+</div>
+{% endblock %}
+
+
