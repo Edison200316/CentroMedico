@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib import messages 
-from .models import Paciente, Medico, Cita, Consulta, Usuario
+from django.contrib import messages
+from datetime import date
+from .models import Paciente, Medico, Cita, Consulta, Usuario, Especialidad
 from .forms import PacienteForm, MedicoForm, CitaForm, ConsultaForm, UsuarioForm
 
 def dashboard(request):
@@ -83,63 +84,45 @@ def medicos_eliminar(request, id):
         return redirect('medicos_lista')
     return render(request, 'medicos/eliminar.html', {'medico': medico})
 
+def disponibilidad_medico(request, medico_id):
+    medico = get_object_or_404(Medico, id=medico_id)
+    fecha = request.GET.get('fecha', date.today())  # Obtener la fecha de la consulta o usar la fecha actual
+    turnos = medico.obtener_turnos_disponibles(fecha)
+
+    return render(request, 'medicos/disponibilidad.html', {
+        'medico': medico,
+        'fecha': fecha,
+        'turnos': turnos,
+    })
+
 # Vistas para Citas Médicas
-# Listar Citas
 def citas_lista(request):
     citas = Cita.objects.all()
     return render(request, 'citas/lista.html', {'citas': citas})
 
-# Crear Nueva Cita
 def citas_nueva(request):
-    pacientes = Paciente.objects.all()
-    medicos = Medico.objects.all()
-
     if request.method == 'POST':
-        paciente_id = request.POST['paciente']
-        medico_id = request.POST['medico']
-        fecha = request.POST['fecha']
-        hora = request.POST['hora']
-        estado = request.POST['estado']
-        motivo = request.POST['motivo']
+        form = CitaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Cita creada correctamente.")
+            return redirect('citas_lista')
+    else:
+        form = CitaForm()
+    return render(request, 'citas/nueva.html', {'form': form})
 
-        cita = Cita(
-            paciente_id=paciente_id,
-            medico_id=medico_id,
-            fecha=fecha,
-            hora=hora,
-            estado=estado,
-            motivo=motivo
-        )
-        cita.save()
-        messages.success(request, "Cita creada correctamente.")
-        return redirect('citas_lista')
-
-    return render(request, 'citas/nueva.html', {'pacientes': pacientes, 'medicos': medicos})
-
-# Editar Cita
 def citas_editar(request, cita_id):
     cita = get_object_or_404(Cita, id=cita_id)
-    pacientes = Paciente.objects.all()
-    medicos = Medico.objects.all()
-
     if request.method == 'POST':
-        cita.paciente_id = request.POST['paciente']
-        cita.medico_id = request.POST['medico']
-        cita.fecha = request.POST['fecha']
-        cita.hora = request.POST['hora']
-        cita.estado = request.POST['estado']
-        cita.motivo = request.POST['motivo']
-        cita.save()
-        messages.success(request, "Cita actualizada correctamente.")
-        return redirect('citas_lista')
+        form = CitaForm(request.POST, instance=cita)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Cita actualizada correctamente.")
+            return redirect('citas_lista')
+    else:
+        form = CitaForm(instance=cita)
+    return render(request, 'citas/editar.html', {'form': form, 'cita': cita})
 
-    return render(request, 'citas/editar.html', {
-        'cita': cita,
-        'pacientes': pacientes,
-        'medicos': medicos
-    })
-
-# cancelar Cita
 def citas_cancelar(request, cita_id):
     cita = get_object_or_404(Cita, id=cita_id)
     if request.method == 'POST':
@@ -184,7 +167,6 @@ def consultas_eliminar(request, id):
         messages.success(request, "Consulta eliminada exitosamente.")
         return redirect('consultas_lista')
     return render(request, 'consultas/eliminar_confirmar.html', {'consulta': consulta})
-
 
 # Vistas para Usuarios
 def usuarios_lista(request):

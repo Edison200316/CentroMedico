@@ -9,26 +9,31 @@ class EspecialidadAdmin(admin.ModelAdmin):
 
 # Personalización para pacientes
 class PacienteAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'apellido', 'documento_identidad', 'telefono', 'correo', 'fecha_nacimiento', 'fecha_registro')
-    search_fields = ('nombre', 'apellido', 'documento_identidad')
+    list_display = ('nombre', 'apellido', 'cedula', 'telefono', 'correo', 'fecha_nacimiento', 'fecha_registro')
+    search_fields = ('nombre', 'apellido', 'cedula')
     list_filter = ('fecha_registro', 'fecha_nacimiento')
 
 # Personalización para médicos
 class MedicoAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'apellido', 'especialidad', 'telefono', 'correo')
-    search_fields = ('nombre', 'apellido', 'especialidad')
-    list_filter = ('especialidad',)
+    list_display = ('nombre', 'apellido', 'get_especialidades', 'telefono', 'correo', 'horario_inicio', 'horario_fin')
+    search_fields = ('nombre', 'apellido', 'especialidades__nombre', 'telefono', 'correo')
+    list_filter = ('especialidades',)
+
+    # Mostrar las especialidades como una lista separada por comas
+    def get_especialidades(self, obj):
+        return ", ".join([especialidad.nombre for especialidad in obj.especialidades.all()])
+    get_especialidades.short_description = 'Especialidades'
 
 # Personalización para citas médicas
 class CitaAdmin(admin.ModelAdmin):
-    list_display = ('paciente', 'medico', 'fecha', 'estado')
+    list_display = ('paciente', 'medico', 'fecha', 'hora', 'estado')
     search_fields = ('paciente__nombre', 'medico__nombre', 'motivo')
     list_filter = ('estado', 'fecha')
 
 # Personalización para consultas médicas
 class ConsultaAdmin(admin.ModelAdmin):
-    list_display = ('cita', 'diagnostico', 'receta')
-    search_fields = ('cita__paciente__nombre', 'diagnostico')
+    list_display = ('cita', 'diagnostico', 'receta', 'indicaciones')
+    search_fields = ('cita__paciente__nombre', 'diagnostico', 'receta')
     list_filter = ['cita__fecha']
 
 # Personalización para facturas

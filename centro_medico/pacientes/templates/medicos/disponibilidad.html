@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Disponibilidad de {{ medico.nombre }} {{ medico.apellido }}</h2>
+    <p class="text-center">Fecha: {{ fecha }}</p>
+
+    <div class="row mt-4">
+        {% for turno in turnos %}
+            <div class="col-md-2 mb-3">
+                <div class="card {% if turno.ocupado %}bg-danger text-white{% else %}bg-success text-white{% endif %}">
+                    <div class="card-body text-center">
+                        <p class="mb-0">{{ turno.hora }}</p>
+                        {% if turno.ocupado %}
+                            <small>Ocupado</small>
+                        {% else %}
+                            <small>Disponible</small>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
