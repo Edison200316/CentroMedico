@@ -19,11 +19,20 @@ from django.urls import path
 from pacientes import views
 from django.conf import settings
 from django.conf.urls.static import static
+from django.urls import path
+from django.contrib.auth import views as auth_views
 
 
 urlpatterns = [
+
+    path('inicio/', views.inicio, name='inicio'),
+    path('login/', auth_views.LoginView.as_view(), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+
     # Ruta al Dashboard
     path('', views.dashboard, name='dashboard'),
+
+    path('login/', views.login_view, name='login'),  # URL para login
 
     # Rutas para Pacientes
     path('pacientes/', views.pacientes_lista, name='pacientes_lista'),
@@ -53,8 +62,6 @@ urlpatterns = [
 
     # Rutas para Usuarios
     path('usuarios/', views.usuarios_lista, name='usuarios_lista'),
-    path('usuarios/nuevo/', views.usuarios_nuevo, name='usuarios_nuevo'),
-    path('usuarios/<int:id>/editar/', views.usuarios_editar, name='usuarios_editar'),
     path('usuarios/<int:id>/eliminar/', views.usuarios_eliminar, name='usuarios_eliminar'),
 
     # Admin

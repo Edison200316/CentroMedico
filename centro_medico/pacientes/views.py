@@ -2,6 +2,55 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages 
 from .models import Paciente, Medico, Cita, Consulta, Usuario
 from .forms import PacienteForm, MedicoForm, CitaForm, ConsultaForm, UsuarioForm
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login, authenticate, logout
+
+@login_required
+def inicio(request):
+    # Si el usuario está autenticado, muestra la página de inicio
+    return render(request, 'inicio.html')
+
+# Vista no autenticada redirige al login
+def home(request):
+    return redirect('login')
+
+# Vista para el login
+def login_view(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                # Redirigir según el rol
+                if user.is_superuser:
+                    return redirect('inicio_admin')  # Redirigir a la página de admin
+                else:
+                    return redirect('inicio_usuario')  # Redirigir a la página de usuario normal
+            else:
+                form.add_error(None, 'Usuario o contraseña incorrectos.')
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'usuarios/login.html', {'form': form})
+
+@login_required
+def inicio(request):
+    return render(request, 'inicio.html')
+def es_admin(user):
+    return user.rol == 'admin'
+
+@login_required
+def inicio(request):
+    if request.user.is_staff:
+        # Código para el administrador
+        return render(request, 'admin_inicio.html')
+    else:
+        # Código para usuarios normales
+        return render(request, 'usuario_inicio.html')
 
 def dashboard(request):
     return render(request, 'dashboard.html')
@@ -190,29 +239,6 @@ def consultas_eliminar(request, id):
 def usuarios_lista(request):
     usuarios = Usuario.objects.all()
     return render(request, 'usuarios/lista.html', {'usuarios': usuarios})
-
-def usuarios_nuevo(request):
-    if request.method == 'POST':
-        form = UsuarioForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Usuario registrado exitosamente.")
-            return redirect('usuarios_lista')
-    else:
-        form = UsuarioForm()
-    return render(request, 'usuarios/nuevo.html', {'form': form})
-
-def usuarios_editar(request, id):
-    usuario = get_object_or_404(Usuario, id=id)
-    if request.method == 'POST':
-        form = UsuarioForm(request.POST, instance=usuario)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Usuario actualizado exitosamente.")
-            return redirect('usuarios_lista')
-    else:
-        form = UsuarioForm(instance=usuario)
-    return render(request, 'usuarios/editar.html', {'form': form, 'usuario': usuario})
 
 def usuarios_eliminar(request, id):
     usuario = get_object_or_404(Usuario, id=id)

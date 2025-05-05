@@ -41,7 +41,19 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'pacientes',
+
 ]
+LOGIN_REDIRECT_URL = '/'
+
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'inicio'
+LOGOUT_REDIRECT_URL = 'login'
+
+# Dirección de la página que se debe redirigir después de hacer login
+LOGIN_REDIRECT_URL = '/'
+# Dirección de la página de login
+LOGIN_URL = 'login'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -59,6 +71,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -90,7 +103,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'centro_medico',
         'USER': 'root', 
-        'PASSWORD': 'Belen2025.Data',
+        'PASSWORD': 'edi200316',
         'HOST': 'localhost',
         'PORT': '3306',
     }
