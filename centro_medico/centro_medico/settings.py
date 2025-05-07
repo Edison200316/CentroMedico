@@ -42,13 +42,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'pacientes',
-
 ]
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = 'login'
-
 
 
 MIDDLEWARE = [
@@ -66,12 +64,7 @@ ROOT_URLCONF = 'centro_medico.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-<<<<<<< HEAD
-        'DIRS': [],
-        'DIRS': [BASE_DIR / 'templates'],
-=======
-        'DIRS': [BASE_DIR / 'templates'],  # Agregado para usar una carpeta global de templates
->>>>>>> 1f37fd13e1081ca47c081bdf00ceffed0fc70677
+        'DIRS': [BASE_DIR / 'templates'],  # Usar una carpeta global de templates
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -163,10 +156,6 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-<<<<<<< HEAD
-LOGIN_URL = 'login'
-=======
 # Configuración adicional para desarrollo
 if DEBUG:
     INTERNAL_IPS = ['127.0.0.1']
->>>>>>> 1f37fd13e1081ca47c081bdf00ceffed0fc70677
