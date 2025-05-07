@@ -71,6 +71,7 @@ TEMPLATES = [
     },
 ]
 
+
 MESSAGE_TAGS = {
     messages.DEBUG: 'secondary',
     messages.INFO: 'info',
