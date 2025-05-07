@@ -1,50 +1,74 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
-    <h1 class="my-4">Nueva Cita Médica</h1>
-    <form method="POST">
-        {% csrf_token %}
-        <div class="form-group mb-3">
-            <label for="id_paciente">Paciente</label>
-            <select class="form-control" id="id_paciente" name="paciente">
-                {% for paciente in pacientes %}
-                    <option value="{{ paciente.id }}">{{ paciente.nombre }} {{ paciente.apellido }}</option>
-                {% endfor %}
-            </select>
+<div class="container mt-5">
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-primary">Nueva Cita Médica</h1>
+        <a href="{% url 'citas_lista' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver a la lista
+        </a>
+    </div>
+
+    <!-- Formulario -->
+    <div class="card shadow rounded-4">
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="id_paciente" class="form-label">Paciente</label>
+                    <select class="form-select" id="id_paciente" name="paciente" required>
+                        {% for paciente in pacientes %}
+                            <option value="{{ paciente.id }}">{{ paciente.nombre }} {{ paciente.apellido }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_medico" class="form-label">Médico</label>
+                    <select class="form-select" id="id_medico" name="medico" required>
+                        {% for medico in medicos %}
+                            <option value="{{ medico.id }}">{{ medico.nombre }} ({{ medico.especialidad }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_fecha" class="form-label">Fecha</label>
+                    <input type="date" class="form-control" id="id_fecha" name="fecha" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_hora" class="form-label">Hora</label>
+                    <input type="time" class="form-control" id="id_hora" name="hora" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_estado" class="form-label">Estado</label>
+                    <select class="form-select" id="id_estado" name="estado" required>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="Confirmada">Confirmada</option>
+                        <option value="Cancelada">Cancelada</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_motivo" class="form-label">Motivo</label>
+                    <textarea class="form-control" id="id_motivo" name="motivo" rows="3" required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100">
+                    <i class="fas fa-save"></i> Guardar Cita
+                </button>
+                <a href="{% url 'citas_lista' %}" class="btn btn-secondary w-100 mt-2">
+                    <i class="fas fa-arrow-left"></i> Cancelar
+                </a>
+            </form>
         </div>
-        <div class="form-group mb-3">
-            <label for="id_medico">Médico</label>
-            <select class="form-control" id="id_medico" name="medico">
-                {% for medico in medicos %}
-                    <option value="{{ medico.id }}">{{ medico.nombre }} ({{ medico.especialidad }})</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="form-group mb-3">
-            <label for="id_fecha">Fecha</label>
-            <input type="date" class="form-control" id="id_fecha" name="fecha" required>
-        </div>
-        <div class="form-group mb-3">
-            <label for="id_hora">Hora</label>
-            <input type="time" class="form-control" id="id_hora" name="hora" required>
-        </div>
-        <div class="form-group mb-3">
-            <label for="id_estado">Estado</label>
-            <select class="form-control" id="id_estado" name="estado">
-                <option value="Pendiente">Pendiente</option>
-                <option value="Confirmada">Confirmada</option>
-                <option value="Cancelada">Cancelada</option>
-            </select>
-        </div>
-        <div class="form-group mb-3">
-            <label for="id_motivo">Motivo</label>
-            <textarea class="form-control" id="id_motivo" name="motivo" rows="3" required></textarea>
-        </div>
-        <button type="submit" class="btn btn-success">Guardar</button>
-        <a href="{% url 'citas_lista' %}" class="btn btn-secondary">Cancelar</a>
-    </form>
+    </div>
 </div>
 {% endblock %}
+
+
 
 

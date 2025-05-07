@@ -99,8 +99,9 @@ class Cita(models.Model):
 # Modelo para Consultas Médicas
 class Consulta(models.Model):
     cita = models.ForeignKey(Cita, on_delete=models.CASCADE)
+    motivo = models.TextField(max_length=255, verbose_name="Motivo de la consulta", default="Sin motivo")
     diagnostico = models.TextField()
-    receta = models.TextField()
+    receta = models.TextField(verbose_name="Tratamiento/Receta")
     indicaciones = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -113,6 +114,9 @@ class Consulta(models.Model):
             raise ValidationError("El diagnóstico y la receta son obligatorios.")
         if len(self.indicaciones) == 0:
             raise ValidationError("Las indicaciones son obligatorias.")
+        if len(self.motivo.strip()) == 0:
+            raise ValidationError("El motivo de la consulta es obligatorio.")
+
 
 # Modelo para Facturas
 class Factura(models.Model):

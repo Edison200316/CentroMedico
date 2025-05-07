@@ -163,7 +163,9 @@ def consultas_nueva(request):
             return redirect('consultas_lista')
     else:
         form = ConsultaForm()
-    return render(request, 'consultas/nueva.html', {'form': form})
+    
+    citas = Cita.objects.all()
+    return render(request, 'consultas/nueva.html', {'form': form, 'citas': citas})
 
 def consultas_editar(request, id):
     consulta = get_object_or_404(Consulta, id=id)
@@ -175,7 +177,9 @@ def consultas_editar(request, id):
             return redirect('consultas_lista')
     else:
         form = ConsultaForm(instance=consulta)
-    return render(request, 'consultas/editar.html', {'form': form, 'consulta': consulta})
+    
+    citas = Cita.objects.all()
+    return render(request, 'consultas/editar.html', {'form': form, 'consulta': consulta, 'citas': citas})
 
 def consultas_eliminar(request, id):
     consulta = get_object_or_404(Consulta, id=id)
