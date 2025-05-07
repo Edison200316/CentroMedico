@@ -1,5 +1,64 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<h1 class="text-center">Bienvenido al Sistema del Centro Médico</h1>
-<p class="text-center">Seleccione una opción en el menú para comenzar.</p>
+<div class="container mt-5">
+    <div class="text-center">
+        <h1 class="text-primary mb-4">Bienvenido al Sistema del Centro Médico</h1>
+        <p class="text-muted fs-5">Seleccione una opción en el menú para comenzar.</p>
+    </div>
+    <div class="row mt-5">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-user-injured fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Pacientes</h5>
+                    <p class="card-text">Gestione la información de los pacientes registrados.</p>
+                    <a href="{% url 'pacientes_lista' %}" class="btn btn-primary">Ir a Pacientes</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-user-md fa-3x text-success mb-3"></i>
+                    <h5 class="card-title">Médicos</h5>
+                    <p class="card-text">Administre los datos de los médicos del centro.</p>
+                    <a href="{% url 'medicos_lista' %}" class="btn btn-success">Ir a Médicos</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-calendar-alt fa-3x text-warning mb-3"></i>
+                    <h5 class="card-title">Citas</h5>
+                    <p class="card-text">Programe y gestione las citas médicas.</p>
+                    <a href="{% url 'citas_lista' %}" class="btn btn-warning">Ir a Citas</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-notes-medical fa-3x text-info mb-3"></i>
+                    <h5 class="card-title">Consultas</h5>
+                    <p class="card-text">Revise y registre las consultas realizadas.</p>
+                    <a href="{% url 'consultas_lista' %}" class="btn btn-info">Ir a Consultas</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-users fa-3x text-danger mb-3"></i>
+                    <h5 class="card-title">Usuarios</h5>
+                    <p class="card-text">Gestione los usuarios del sistema.</p>
+                    <a href="{% url 'usuarios_lista' %}" class="btn btn-danger">Ir a Usuarios</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

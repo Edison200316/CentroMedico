@@ -15,15 +15,23 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from pacientes import views
 from django.conf import settings
 from django.conf.urls.static import static
-
+from pacientes import views as pacientes_views
+from django.contrib import admin
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
-    # Ruta al Dashboard
-    path('', views.dashboard, name='dashboard'),
+
+    # Rutas de autenticación
+    path('login/', pacientes_views.login_view, name='login'),
+    path('logout/', pacientes_views.logout_view, name='logout'),
+    path('registro/', pacientes_views.registro_view, name='registro'),
+
+    # Ruta al dashboard principal (interfaz de bienvenida)
+    path('', pacientes_views.dashboard, name='dashboard'),
 
     # Rutas para Pacientes
     path('pacientes/', views.pacientes_lista, name='pacientes_lista'),
@@ -37,11 +45,12 @@ urlpatterns = [
     path('medicos/nuevo/', views.medicos_nuevo, name='medicos_nuevo'),
     path('medicos/<int:id>/editar/', views.medicos_editar, name='medicos_editar'),
     path('medicos/<int:id>/eliminar/', views.medicos_eliminar, name='medicos_eliminar'),
+    path('medicos/<int:medico_id>/disponibilidad/', views.disponibilidad_medico, name='disponibilidad_medico'),
 
     # Rutas para Citas Médicas
     path('citas/', views.citas_lista, name='citas_lista'),
     path('citas/nueva/', views.citas_nueva, name='citas_nueva'),
-    path('citas/<int:id>/editar/', views.citas_editar, name='citas_editar'),
+    path('citas/<int:cita_id>/editar/', views.citas_editar, name='citas_editar'),
     path('citas/cancelar/<int:cita_id>/', views.citas_cancelar, name='citas_cancelar'),
 
     # Rutas para Consultas Médicas
@@ -53,8 +62,6 @@ urlpatterns = [
 
     # Rutas para Usuarios
     path('usuarios/', views.usuarios_lista, name='usuarios_lista'),
-    path('usuarios/nuevo/', views.usuarios_nuevo, name='usuarios_nuevo'),
-    path('usuarios/<int:id>/editar/', views.usuarios_editar, name='usuarios_editar'),
     path('usuarios/<int:id>/eliminar/', views.usuarios_eliminar, name='usuarios_eliminar'),
 
     # Admin

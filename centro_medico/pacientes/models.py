@@ -1,7 +1,9 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
 from django.utils import timezone
+from django.shortcuts import render, get_object_or_404
+from datetime import date
 import re
 
 # Validación personalizada para correo electrónico
@@ -9,10 +11,15 @@ def validate_email(value):
     if not re.match(r"[^@]+@[^@]+\.[^@]+", value):
         raise ValidationError(f"El correo '{value}' no tiene un formato válido.")
 
-# Validación personalizada para teléfono
+# Validación personalizada para teléfono (10 dígitos)
 def validate_telefono(value):
-    if not re.match(r"^\+?\d{1,3}?[ -]?\(?\d{1,5}\)?[ -]?\d{1,4}[ -]?\d{1,4}[ -]?\d{1,4}$", value):
-        raise ValidationError(f"El número de teléfono '{value}' no es válido. Debe tener un formato adecuado.")
+    if not re.match(r"^\d{10}$", value):
+        raise ValidationError(f"El número de teléfono '{value}' debe contener exactamente 10 dígitos.")
+
+# Validación personalizada para cédula (solo números)
+def validate_cedula(value):
+    if not re.match(r"^\d+$", value):
+        raise ValidationError(f"La cédula '{value}' debe contener únicamente números.")
 
 # Validación para fecha de nacimiento
 def validate_fecha_nacimiento(value):
@@ -30,11 +37,11 @@ class Especialidad(models.Model):
 class Paciente(models.Model):
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
-    documento_identidad = models.CharField(max_length=20, unique=True) 
+    cedula = models.CharField(max_length=10, unique=True)
     direccion = models.CharField(max_length=255)
-    telefono = models.CharField(max_length=15, validators=[validate_telefono])
-    correo = models.EmailField(validators=[validate_email])
-    fecha_nacimiento = models.DateField(validators=[validate_fecha_nacimiento])
+    telefono = models.CharField(max_length=10)
+    correo = models.EmailField()
+    fecha_nacimiento = models.DateField()
     fecha_registro = models.DateTimeField(auto_now_add=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -42,59 +49,93 @@ class Paciente(models.Model):
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
 
-    def clean(self):
-        if not self.nombre or not self.apellido:
-            raise ValidationError("El nombre y apellido son obligatorios.")
-        if not self.documento_identidad:
-            raise ValidationError("El documento de identidad es obligatorio.")
-        if not self.telefono:
-            raise ValidationError("El teléfono es obligatorio.")
-        if not self.correo:
-            raise ValidationError("El correo electrónico es obligatorio.")
-
 # Modelo para Médicos
 class Medico(models.Model):
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
-    especialidad = models.ForeignKey(Especialidad, on_delete=models.CASCADE)
-    telefono = models.CharField(max_length=15, validators=[validate_telefono])
-    correo = models.EmailField(validators=[validate_email])
-    disponibilidad = models.TextField(help_text="Ejemplo: Lunes a Viernes, 9:00 AM - 5:00 PM")
+    especialidades = models.CharField(max_length=50, choices=[('Cardiología', 'Cardiología'), ('Pediatría', 'Pediatría'), ('Dermatología', 'Dermatología','Medicina General', 'Medicina General', 'Ginecología', 'Ginecología')])
+    telefono = models.CharField(        max_length=10,         validators=[validate_telefono])
+    correo = models.EmailField()
+    horario_inicio = models.TimeField(default="08:00:00",
+help_text="Hora de inicio del turno (ejemplo: 09:00 AM)")
+    horario_fin = models.TimeField(
+help_text="Hora de fin del turno (ejemplo: 17:00 PM)",
+        null=True,
+        blank=True
+    )
+    # Validación para el horario de atención
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Dr. {self.nombre} {self.apellido} ({self.especialidad})"
+        especialidades = ", ".join([especialidad.nombre for especialidad in self.especialidades.all()])
+        return f"Dr. {self.nombre} {self.apellido} ({especialidades})"
 
-    def clean(self):
-        if not self.nombre or not self.apellido:
-            raise ValidationError("El nombre y apellido del médico son obligatorios.")
-        if not self.especialidad:
-            raise ValidationError("La especialidad es obligatoria.")
-        if not self.telefono:
-            raise ValidationError("El teléfono es obligatorio.")
-        if not self.correo:
-            raise ValidationError("El correo electrónico es obligatorio.")
+    def obtener_turnos_disponibles(self, fecha):
+        """
+        Devuelve una lista de turnos disponibles y ocupados para una fecha específica.
+        """
+        from datetime import timedelta, datetime
+
+        # Convertir el horario de inicio y fin en intervalos de 30 minutos
+        turnos = []
+        hora_actual = datetime.combine(fecha, self.horario_inicio)
+        hora_fin = datetime.combine(fecha, self.horario_fin)
+
+        while hora_actual < hora_fin:
+            turnos.append(hora_actual.time())
+            hora_actual += timedelta(minutes=30)
+
+        # Obtener las citas agendadas para este médico en la fecha
+        citas = Cita.objects.filter(medico=self, fecha=fecha)
+
+        # Marcar los turnos ocupados
+        turnos_ocupados = [cita.hora for cita in citas]
+        turnos_disponibles = [
+            {"hora": turno, "ocupado": turno in turnos_ocupados} for turno in turnos
+        ]
+
+        return turnos_disponibles
 
 # Modelo para Citas Médicas
 class Cita(models.Model):
-    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
-    medico = models.ForeignKey(Medico, on_delete=models.CASCADE)
+    paciente = models.ForeignKey('Paciente', on_delete=models.CASCADE)
+    medico = models.ForeignKey('Medico', on_delete=models.CASCADE)
     fecha = models.DateTimeField(default=timezone.now)
     hora = models.TimeField()
-    estado = models.CharField(max_length=20, choices=[('Pendiente', 'Pendiente'), ('Confirmada', 'Confirmada'), ('Cancelada', 'Cancelada')], default='Pendiente')
-    motivo = models.TextField(null=True, blank=True)  # Agregado el campo 'motivo'
+    estado = models.CharField(
+        max_length=20, 
+        choices=[('Pendiente', 'Pendiente'), ('Confirmada', 'Confirmada'), ('Cancelada', 'Cancelada')], 
+        default='Pendiente'
+    )
+    motivo = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Cita de {self.paciente} con {self.medico} en {self.fecha}"
+        return f"Cita de {self.paciente} con {self.medico} en {self.fecha.strftime('%Y-%m-%d')} a las {self.hora.strftime('%H:%M')}"
 
     def clean(self):
         if self.fecha < timezone.now():
             raise ValidationError("La fecha de la cita no puede ser en el pasado.")
         if not self.motivo:
             raise ValidationError("El motivo de la cita es obligatorio.")
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
+    medico = models.ForeignKey(Medico, on_delete=models.CASCADE)
+    especialidad = models.ForeignKey(Especialidad, on_delete=models.CASCADE)  # Relación con Especialidad
+    fecha = models.DateField()
+    hora = models.TimeField()
+    estado = models.CharField(
+        max_length=20,
+        choices=[('Pendiente', 'Pendiente'), ('Confirmada', 'Confirmada'), ('Cancelada', 'Cancelada')],
+        default='Pendiente'
+    )
+    motivo = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Cita de {self.paciente} con {self.medico} en {self.fecha} a las {self.hora} ({self.especialidad})"
 
 # Modelo para Consultas Médicas
 class Consulta(models.Model):
@@ -111,7 +152,7 @@ class Consulta(models.Model):
     def clean(self):
         if not self.diagnostico or not self.receta:
             raise ValidationError("El diagnóstico y la receta son obligatorios.")
-        if len(self.indicaciones) == 0:
+        if not self.indicaciones or len(self.indicaciones.strip()) == 0:
             raise ValidationError("Las indicaciones son obligatorias.")
 
 # Modelo para Facturas
@@ -128,15 +169,13 @@ class Factura(models.Model):
         return f"Factura de {self.consulta.cita.paciente} - Total: {self.total} - Estado: {self.estado_pago}"
 
     def clean(self):
-        if self.total <= 0:
-            raise ValidationError("El total de la factura debe ser mayor a cero.")
         if self.estado_pago not in ['Pagado', 'Pendiente']:
             raise ValidationError("El estado de pago debe ser 'Pagado' o 'Pendiente'.")
 
 # Modelo para Usuarios del Sistema
 class Usuario(models.Model):
     nombre = models.CharField(max_length=100)
-    correo = models.EmailField(validators=[validate_email])
+    correo = models.EmailField()
     rol = models.CharField(max_length=50, choices=[('Secretaria', 'Secretaria'), ('Medico', 'Medico'), ('Administrador', 'Administrador')])
     contrasena = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -145,11 +184,16 @@ class Usuario(models.Model):
     def __str__(self):
         return f"{self.nombre} ({self.rol})"
 
-    def clean(self):
-        if not self.nombre or not self.correo or not self.rol or not self.contrasena:
-            raise ValidationError("Todos los campos son obligatorios.")
-        if self.rol not in ['Secretaria', 'Medico', 'Administrador']:
-            raise ValidationError("El rol debe ser 'Secretaria', 'Medico' o 'Administrador'.")
+def disponibilidad_medico(request, medico_id):
+    medico = get_object_or_404(Medico, id=medico_id)
+    fecha = request.GET.get('fecha', date.today())  # Obtener la fecha de la consulta o usar la fecha actual
+    turnos = medico.obtener_turnos_disponibles(fecha)
+
+    return render(request, 'medicos/disponibilidad.html', {
+        'medico': medico,
+        'fecha': fecha,
+        'turnos': turnos,
+    })
 
 
 
