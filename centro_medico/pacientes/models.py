@@ -53,13 +53,13 @@ class Paciente(models.Model):
 class Medico(models.Model):
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
-    especialidades = models.ManyToManyField(Especialidad, related_name='medicos')  # Relación ManyToMany
-    telefono = models.CharField(max_length=10, validators=[validate_telefono])
+    especialidades = models.CharField(max_length=50, choices=[('Cardiología', 'Cardiología'), ('Pediatría', 'Pediatría'), ('Dermatología', 'Dermatología','Medicina General', 'Medicina General', 'Ginecología', 'Ginecología')])
+    telefono = models.CharField(        max_length=10,         validators=[validate_telefono])
     correo = models.EmailField()
     horario_inicio = models.TimeField(default="08:00:00",
-        help_text="Hora de inicio del turno (ejemplo: 09:00 AM)")
+help_text="Hora de inicio del turno (ejemplo: 09:00 AM)")
     horario_fin = models.TimeField(
-        help_text="Hora de fin del turno (ejemplo: 05:00 PM)",
+help_text="Hora de fin del turno (ejemplo: 17:00 PM)",
         null=True,
         blank=True
     )
@@ -101,6 +101,7 @@ class Medico(models.Model):
 class Cita(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
     medico = models.ForeignKey(Medico, on_delete=models.CASCADE)
+    especialidad = models.ForeignKey(Especialidad, on_delete=models.CASCADE)  # Relación con Especialidad
     fecha = models.DateField()
     hora = models.TimeField()
     estado = models.CharField(
@@ -113,7 +114,7 @@ class Cita(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Cita de {self.paciente} con {self.medico} en {self.fecha} a las {self.hora}"
+        return f"Cita de {self.paciente} con {self.medico} en {self.fecha} a las {self.hora} ({self.especialidad})"
 
 # Modelo para Consultas Médicas
 class Consulta(models.Model):

@@ -51,9 +51,16 @@ class MedicoForm(forms.ModelForm):
 
 # Formulario para Cita
 class CitaForm(forms.ModelForm):
+    especialidad = forms.ModelChoiceField(
+        queryset=Especialidad.objects.all(),
+        empty_label="Seleccione una especialidad",
+        required=True,
+        label="Especialidad"
+    )
+
     class Meta:
         model = Cita
-        fields = ['paciente', 'medico', 'fecha', 'hora', 'estado']
+        fields = ['paciente', 'medico', 'especialidad', 'fecha', 'hora', 'estado', 'motivo']
     
     # Validación de disponibilidad de la cita
     def clean(self):
