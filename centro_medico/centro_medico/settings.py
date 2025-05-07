@@ -43,17 +43,12 @@ INSTALLED_APPS = [
     'pacientes',
 
 ]
-LOGIN_REDIRECT_URL = '/'
-
 
 LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'inicio'
+LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = 'login'
 
-# Dirección de la página que se debe redirigir después de hacer login
-LOGIN_REDIRECT_URL = '/'
-# Dirección de la página de login
-LOGIN_URL = 'login'
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -163,3 +158,5 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = 'login'

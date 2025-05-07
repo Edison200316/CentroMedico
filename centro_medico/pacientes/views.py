@@ -5,52 +5,37 @@ from .forms import PacienteForm, MedicoForm, CitaForm, ConsultaForm, UsuarioForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.models import Group
+from .forms import RegistroForm
 
 @login_required
 def inicio(request):
-    # Si el usuario está autenticado, muestra la página de inicio
     return render(request, 'inicio.html')
 
-# Vista no autenticada redirige al login
-def home(request):
-    return redirect('login')
-
-# Vista para el login
 def login_view(request):
     if request.method == 'POST':
-        form = AuthenticationForm(data=request.POST)
+        user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
+        if user:
+            login(request, user)
+            return redirect('dashboard')
+        else:
+            return render(request, 'login.html', {'error': 'Credenciales inválidas'})
+    return render(request, 'login.html')
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+def registro_view(request):
+    if request.method == "POST":
+        form = RegistroForm(request.POST)
         if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
-                # Redirigir según el rol
-                if user.is_superuser:
-                    return redirect('inicio_admin')  # Redirigir a la página de admin
-                else:
-                    return redirect('inicio_usuario')  # Redirigir a la página de usuario normal
-            else:
-                form.add_error(None, 'Usuario o contraseña incorrectos.')
+            user = form.save()
+            login(request, user)  # Inicia sesión automáticamente después de registrarse
+            return redirect('login')  # O redirige a donde prefieras
     else:
-        form = AuthenticationForm()
-
-    return render(request, 'usuarios/login.html', {'form': form})
-
-@login_required
-def inicio(request):
-    return render(request, 'inicio.html')
-def es_admin(user):
-    return user.rol == 'admin'
-
-@login_required
-def inicio(request):
-    if request.user.is_staff:
-        # Código para el administrador
-        return render(request, 'admin_inicio.html')
-    else:
-        # Código para usuarios normales
-        return render(request, 'usuario_inicio.html')
+        form = RegistroForm()
+    return render(request, "registro.html", {"form": form})
 
 def dashboard(request):
     return render(request, 'dashboard.html')

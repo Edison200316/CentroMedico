@@ -15,24 +15,23 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from pacientes import views
 from django.conf import settings
 from django.conf.urls.static import static
-from django.urls import path
+from pacientes import views as pacientes_views
+from django.contrib import admin
 from django.contrib.auth import views as auth_views
-
 
 urlpatterns = [
 
-    path('inicio/', views.inicio, name='inicio'),
-    path('login/', auth_views.LoginView.as_view(), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    # Rutas de autenticación
+    path('login/', pacientes_views.login_view, name='login'),
+    path('logout/', pacientes_views.logout_view, name='logout'),
+    path('registro/', pacientes_views.registro_view, name='registro'),
 
-    # Ruta al Dashboard
-    path('', views.dashboard, name='dashboard'),
-
-    path('login/', views.login_view, name='login'),  # URL para login
+    # Ruta al dashboard principal (interfaz de bienvenida)
+    path('', pacientes_views.dashboard, name='dashboard'),
 
     # Rutas para Pacientes
     path('pacientes/', views.pacientes_lista, name='pacientes_lista'),
@@ -50,7 +49,7 @@ urlpatterns = [
     # Rutas para Citas Médicas
     path('citas/', views.citas_lista, name='citas_lista'),
     path('citas/nueva/', views.citas_nueva, name='citas_nueva'),
-    path('citas/<int:id>/editar/', views.citas_editar, name='citas_editar'),
+    path('citas/<int:cita_id>/editar/', views.citas_editar, name='citas_editar'),
     path('citas/cancelar/<int:cita_id>/', views.citas_cancelar, name='citas_cancelar'),
 
     # Rutas para Consultas Médicas

@@ -1,6 +1,8 @@
 from django import forms
 from .models import Paciente, Medico, Cita, Consulta, Usuario, Especialidad, Factura
 from django.core.exceptions import ValidationError
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 
 # Formulario para Paciente
 class PacienteForm(forms.ModelForm):
@@ -105,3 +107,9 @@ class EspecialidadForm(forms.ModelForm):
             raise ValidationError('Ya existe una especialidad con este nombre.')
         return nombre
 
+class RegistroForm(UserCreationForm):
+    email = forms.EmailField(required=True, label="Correo electrónico")
+
+    class Meta:
+        model = User
+        fields = ["username", "email", "password1", "password2"]
