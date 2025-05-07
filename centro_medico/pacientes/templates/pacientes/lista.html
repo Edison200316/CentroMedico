@@ -18,6 +18,7 @@
                     <tr>
                         <th>Nombre</th>
                         <th>Apellido</th>
+                        <th>Cédula</th>
                         <th>Teléfono</th>
                         <th class="text-center">Acciones</th>
                     </tr>
@@ -27,6 +28,7 @@
                         <tr>
                             <td>{{ paciente.nombre }}</td>
                             <td>{{ paciente.apellido }}</td>
+                            <td>{{ paciente.cedula }}</td>
                             <td>{{ paciente.telefono }}</td>
                             <td class="text-center">
                                 <a href="{% url 'pacientes_editar' paciente.id %}" class="btn btn-warning btn-sm me-2">
@@ -39,7 +41,7 @@
                         </tr>
                     {% empty %}
                         <tr>
-                            <td colspan="4" class="text-center text-muted">No hay pacientes registrados.</td>
+                            <td colspan="5" class="text-center text-muted">No hay pacientes registrados.</td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -47,5 +49,14 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block python_code %}
+from django.shortcuts import render
+from .models import Paciente
+
+def pacientes_lista(request):
+    pacientes = Paciente.objects.all()  # Obtiene todos los pacientes
+    return render(request, 'pacientes/lista.html', {'pacientes': pacientes})
 {% endblock %}
 

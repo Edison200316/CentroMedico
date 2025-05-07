@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from django.contrib.messages import constants as messages
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,7 +27,7 @@ SECRET_KEY = 'django-insecure-djgt3-2m#1t9%l@#c+n(_f87=s0%z_i*jj^9!b5v0u2t+)3yk)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -65,8 +66,12 @@ ROOT_URLCONF = 'centro_medico.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+<<<<<<< HEAD
         'DIRS': [],
         'DIRS': [BASE_DIR / 'templates'],
+=======
+        'DIRS': [BASE_DIR / 'templates'],  # Agregado para usar una carpeta global de templates
+>>>>>>> 1f37fd13e1081ca47c081bdf00ceffed0fc70677
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -105,7 +110,6 @@ DATABASES = {
 }
 
 
-
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
@@ -128,9 +132,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-es'  # Cambiado a español
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Mexico_City'  # Cambiado a una zona horaria específica
 
 USE_I18N = True
 
@@ -159,4 +163,10 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+<<<<<<< HEAD
 LOGIN_URL = 'login'
+=======
+# Configuración adicional para desarrollo
+if DEBUG:
+    INTERNAL_IPS = ['127.0.0.1']
+>>>>>>> 1f37fd13e1081ca47c081bdf00ceffed0fc70677

@@ -17,7 +17,7 @@
             <label for="id_medico">Médico</label>
             <select class="form-control" id="id_medico" name="medico">
                 {% for medico in medicos %}
-                    <option value="{{ medico.id }}" {% if medico.id == cita.medico.id %}selected{% endif %}>{{ medico.nombre }} ({{ medico.especialidad }})</option>
+                    <option value="{{ medico.id }}" {% if medico.id == cita.medico.id %}selected{% endif %}>{{ medico.nombre }} ({{ medico.especialidades.all|join:", " }})</option>
                 {% endfor %}
             </select>
         </div>

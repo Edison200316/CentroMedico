@@ -9,7 +9,17 @@
         <div class="card-body">
             <form method="POST" class="needs-validation" novalidate>
                 {% csrf_token %}
+                
+                <!-- Mostrar errores generales del formulario -->
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <!-- Renderizar los campos del formulario -->
                 {{ form.as_p }}
+
                 <div class="d-flex justify-content-between mt-4">
                     <a href="{% url 'pacientes_lista' %}" class="btn btn-secondary">
                         <i class="fas fa-arrow-left"></i> Volver

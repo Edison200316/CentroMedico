@@ -8,27 +8,48 @@ from django.contrib.auth.models import User
 class PacienteForm(forms.ModelForm):
     class Meta:
         model = Paciente
-        fields = ['nombre', 'apellido', 'documento_identidad', 'direccion', 'telefono', 'correo', 'fecha_nacimiento']
+        fields = ['nombre', 'apellido', 'cedula', 'direccion', 'telefono', 'correo', 'fecha_nacimiento']
     
-    # Validación del número de documento
-    def clean_documento_identidad(self):
-        documento_identidad = self.cleaned_data.get('documento_identidad')
-        if Paciente.objects.filter(documento_identidad=documento_identidad).exists():
-            raise ValidationError('Ya existe un paciente con este número de documento.')
-        return documento_identidad
+    # Validación del número de cédula
+    def clean_cedula(self):
+        cedula = self.cleaned_data.get('cedula')
+        if Paciente.objects.filter(cedula=cedula).exists():
+            raise ValidationError('Ya existe un paciente con este número de cédula.')
+        return cedula
 
-# Formulario para Medico
+    # Validación del número de teléfono
+    def clean_telefono(self):
+        telefono = self.cleaned_data.get('telefono')
+        if len(telefono) != 10:
+            raise ValidationError('El número de teléfono debe contener exactamente 10 dígitos.')
+        return telefono
+
+# Formulario para Médico
 class MedicoForm(forms.ModelForm):
+    especialidades = forms.ModelMultipleChoiceField(
+        queryset=Especialidad.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=True,
+        label="Especialidades"
+    )
+
     class Meta:
         model = Medico
-        fields = ['nombre', 'apellido', 'especialidad', 'telefono', 'correo', 'disponibilidad']
+        fields = ['nombre', 'apellido', 'especialidades', 'telefono', 'correo', 'horario_inicio', 'horario_fin']
     
-    # Validación de correo electrónico
+    # Validación del correo electrónico
     def clean_correo(self):
         correo = self.cleaned_data.get('correo')
         if Medico.objects.filter(correo=correo).exists():
             raise ValidationError('Este correo ya está registrado para otro médico.')
         return correo
+
+    # Validación del número de teléfono
+    def clean_telefono(self):
+        telefono = self.cleaned_data.get('telefono')
+        if len(telefono) != 10:
+            raise ValidationError('El número de teléfono debe contener exactamente 10 dígitos.')
+        return telefono
 
 # Formulario para Cita
 class CitaForm(forms.ModelForm):
@@ -37,12 +58,15 @@ class CitaForm(forms.ModelForm):
         fields = ['paciente', 'medico', 'fecha', 'hora', 'estado']
     
     # Validación de disponibilidad de la cita
-    def clean_fecha(self):
-        fecha = self.cleaned_data.get('fecha')
-        hora = self.cleaned_data.get('hora')
-        if Cita.objects.filter(fecha=fecha, hora=hora).exists():
-            raise ValidationError('Ya existe una cita en esta fecha y hora.')
-        return fecha
+    def clean(self):
+        cleaned_data = super().clean()
+        medico = cleaned_data.get('medico')
+        fecha = cleaned_data.get('fecha')
+        hora = cleaned_data.get('hora')
+
+        if Cita.objects.filter(medico=medico, fecha=fecha, hora=hora).exists():
+            raise ValidationError('El médico ya tiene una cita agendada en esta fecha y hora.')
+        return cleaned_data
 
 # Formulario para Consulta
 class ConsultaForm(forms.ModelForm):

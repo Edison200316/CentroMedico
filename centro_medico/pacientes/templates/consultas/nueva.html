@@ -15,7 +15,7 @@
                     <select class="form-control" id="id_cita" name="cita" required>
                         <option value="" disabled selected>Seleccione una cita</option>
                         {% for cita in citas %}
-                            <option value="{{ cita.id }}">{{ cita }}</option>
+                            <option value="{{ cita.id }}">{{ cita.paciente.nombre }} con {{ cita.medico.nombre }} el {{ cita.fecha }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -33,6 +33,16 @@
                 <div class="form-group mb-3">
                     <label for="id_indicaciones" class="form-label"><strong>Indicaciones</strong></label>
                     <textarea class="form-control" id="id_indicaciones" name="indicaciones" rows="4"></textarea>
+                </div>
+                <!-- Campo de cédula -->
+                <div class="form-group">
+                    {{ form.cedula.label_tag }}
+                    {{ form.cedula }}
+                    {% if form.cedula.errors %}
+                        <div class="text-danger">
+                            {{ form.cedula.errors }}
+                        </div>
+                    {% endif %}
                 </div>
                 <!-- Botones de acción -->
                 <div class="d-flex justify-content-between mt-4">

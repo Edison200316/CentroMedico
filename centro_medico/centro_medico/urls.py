@@ -45,6 +45,7 @@ urlpatterns = [
     path('medicos/nuevo/', views.medicos_nuevo, name='medicos_nuevo'),
     path('medicos/<int:id>/editar/', views.medicos_editar, name='medicos_editar'),
     path('medicos/<int:id>/eliminar/', views.medicos_eliminar, name='medicos_eliminar'),
+    path('medicos/<int:medico_id>/disponibilidad/', views.disponibilidad_medico, name='disponibilidad_medico'),
 
     # Rutas para Citas Médicas
     path('citas/', views.citas_lista, name='citas_lista'),
