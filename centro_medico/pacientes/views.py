@@ -3,6 +3,40 @@ from django.contrib import messages
 from datetime import date
 from .models import Paciente, Medico, Cita, Consulta, Usuario, Especialidad
 from .forms import PacienteForm, MedicoForm, CitaForm, ConsultaForm, UsuarioForm
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.models import Group
+from .forms import RegistroForm
+
+@login_required
+def inicio(request):
+    return render(request, 'inicio.html')
+
+def login_view(request):
+    if request.method == 'POST':
+        user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
+        if user:
+            login(request, user)
+            return redirect('dashboard')
+        else:
+            return render(request, 'login.html', {'error': 'Credenciales inválidas'})
+    return render(request, 'login.html')
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+def registro_view(request):
+    if request.method == "POST":
+        form = RegistroForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)  # Inicia sesión automáticamente después de registrarse
+            return redirect('login')  # O redirige a donde prefieras
+    else:
+        form = RegistroForm()
+    return render(request, "registro.html", {"form": form})
 
 def dashboard(request):
     return render(request, 'dashboard.html')
@@ -172,29 +206,6 @@ def consultas_eliminar(request, id):
 def usuarios_lista(request):
     usuarios = Usuario.objects.all()
     return render(request, 'usuarios/lista.html', {'usuarios': usuarios})
-
-def usuarios_nuevo(request):
-    if request.method == 'POST':
-        form = UsuarioForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Usuario registrado exitosamente.")
-            return redirect('usuarios_lista')
-    else:
-        form = UsuarioForm()
-    return render(request, 'usuarios/nuevo.html', {'form': form})
-
-def usuarios_editar(request, id):
-    usuario = get_object_or_404(Usuario, id=id)
-    if request.method == 'POST':
-        form = UsuarioForm(request.POST, instance=usuario)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Usuario actualizado exitosamente.")
-            return redirect('usuarios_lista')
-    else:
-        form = UsuarioForm(instance=usuario)
-    return render(request, 'usuarios/editar.html', {'form': form, 'usuario': usuario})
 
 def usuarios_eliminar(request, id):
     usuario = get_object_or_404(Usuario, id=id)

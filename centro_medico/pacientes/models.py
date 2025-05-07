@@ -99,6 +99,27 @@ help_text="Hora de fin del turno (ejemplo: 17:00 PM)",
 
 # Modelo para Citas Médicas
 class Cita(models.Model):
+    paciente = models.ForeignKey('Paciente', on_delete=models.CASCADE)
+    medico = models.ForeignKey('Medico', on_delete=models.CASCADE)
+    fecha = models.DateTimeField(default=timezone.now)
+    hora = models.TimeField()
+    estado = models.CharField(
+        max_length=20, 
+        choices=[('Pendiente', 'Pendiente'), ('Confirmada', 'Confirmada'), ('Cancelada', 'Cancelada')], 
+        default='Pendiente'
+    )
+    motivo = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Cita de {self.paciente} con {self.medico} en {self.fecha.strftime('%Y-%m-%d')} a las {self.hora.strftime('%H:%M')}"
+
+    def clean(self):
+        if self.fecha < timezone.now():
+            raise ValidationError("La fecha de la cita no puede ser en el pasado.")
+        if not self.motivo:
+            raise ValidationError("El motivo de la cita es obligatorio.")
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
     medico = models.ForeignKey(Medico, on_delete=models.CASCADE)
     especialidad = models.ForeignKey(Especialidad, on_delete=models.CASCADE)  # Relación con Especialidad
