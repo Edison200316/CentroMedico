@@ -13,9 +13,56 @@
                 {% endfor %}
             </select>
         </div>
+<<<<<<< Updated upstream
         <div class="form-group mb-3">
             <label for="id_diagnostico">Diagnóstico</label>
             <textarea class="form-control" id="id_diagnostico" name="diagnostico" rows="4"></textarea>
+=======
+        <div class="card-body">
+            <form method="POST" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <!-- Campo de selección de cita -->
+                <div class="form-group mb-3">
+                    <label for="id_cita" class="form-label"><strong>Cita</strong></label>
+                    {{ form.cita }}
+                </div>
+
+                <!-- Campo de motivo de la consulta -->
+                <div class="form-group mb-3">
+                    <label for="id_motivo" class="form-label"><strong>Motivo de la Consulta</strong></label>
+                    {{ form.motivo }}
+                </div>
+
+                <!-- Campo de diagnóstico -->
+                <div class="form-group mb-3">
+                    <label for="id_diagnostico" class="form-label"><strong>Diagnóstico</strong></label>
+                    {{ form.diagnostico }}
+                </div>
+
+                <!-- Campo de receta -->
+                <div class="form-group mb-3">
+                    <label for="id_receta" class="form-label"><strong>Tratamiento / Receta</strong></label>
+                    {{ form.receta }}
+                </div>
+
+                <!-- Campo de indicaciones -->
+                <div class="form-group mb-3">
+                    <label for="id_indicaciones" class="form-label"><strong>Indicaciones</strong></label>
+                    {{ form.indicaciones }}
+                </div>
+
+                <!-- Botones -->
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'consultas_lista' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                </div>
+            </form>
+>>>>>>> Stashed changes
         </div>
         <div class="form-group mb-3">
             <label for="id_receta">Receta</label>
@@ -30,4 +77,5 @@
     </form>
 </div>
 {% endblock %}
+
 

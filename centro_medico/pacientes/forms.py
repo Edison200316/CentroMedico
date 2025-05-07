@@ -46,14 +46,20 @@ class CitaForm(forms.ModelForm):
 class ConsultaForm(forms.ModelForm):
     class Meta:
         model = Consulta
-        fields = ['cita', 'diagnostico', 'receta', 'indicaciones']
+        fields = ['cita', 'motivo', 'diagnostico', 'receta', 'indicaciones']
+        widgets = {
+            'cita': forms.Select(attrs={'class': 'form-select'}),
+            'motivo': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+            'diagnostico': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'receta': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'indicaciones': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
 
-    # Validación del campo 'motivo' en la cita asociada
     def clean(self):
         cleaned_data = super().clean()
-        cita = cleaned_data.get('cita')
-        if not cita.motivo:  # Esto verifica que el motivo de la cita esté presente
-            raise ValidationError("El motivo de la cita es obligatorio.")
+        motivo = cleaned_data.get('motivo')
+        if not motivo or not motivo.strip():
+            raise ValidationError("El motivo de la consulta es obligatorio.")
         return cleaned_data
 
 # Formulario para Factura
