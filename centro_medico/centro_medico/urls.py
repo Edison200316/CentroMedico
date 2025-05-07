@@ -50,7 +50,7 @@ urlpatterns = [
     # Rutas para Citas Médicas
     path('citas/', views.citas_lista, name='citas_lista'),
     path('citas/nueva/', views.citas_nueva, name='citas_nueva'),
-    path('citas/<int:id>/editar/', views.citas_editar, name='citas_editar'),
+    path('citas/<int:cita_id>/editar/', views.citas_editar, name='citas_editar'),
     path('citas/cancelar/<int:cita_id>/', views.citas_cancelar, name='citas_cancelar'),
 
     # Rutas para Consultas Médicas
